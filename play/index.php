@@ -2,6 +2,7 @@
 
 	class Board{
 		public $board;
+		public $ships;
 		public $rows = 10;
 		public $columns = 10;
 		public $empty = 0;
@@ -24,9 +25,9 @@
 		
 		function fireAt($shot){
 			if( isCellEmpty($shot->getX(), $shot->getY()) ){
+				checkCollision($shot);
 				$this->board[$shot->getX()][$shot->getY()] = $hit;
 			}
-			checkCollision($shot);
 		}
 		
 		function isCellEmpty($xPos, $yPos){
@@ -37,7 +38,11 @@
 		}
 		
 		function checkCollision($shot){
+			$hitCell = $this->board[$shot->getX()][$shot->getY()];
 			
+			if($hitCell == 0){
+				return;
+			}
 		}
 		
 	}
@@ -50,6 +55,12 @@
 		public $isWin;   // game over?
 		public $ship;
 		
+		function __construct(){
+			$this->isHit = false;   // hit a ship?
+			$this->isSunk = false;  // sink a ship?
+			$this->isWin = false;
+		}
+		
 		function getX(){
 			return $this->x;
 		}
@@ -57,7 +68,32 @@
 		function getY(){
 			return $this->y;
 		}	
+		
+		function setIsHit($isHit){
+			$this->isHit = $isHit;
+		}
+		
+		function setIsSunk($isSunk){
+			$this->isSunk = $isSunk;
+		}
+		
+		function setIsWin($isWin){
+			$this->isWin = $isWin;
+		}
 	}
 	
 	$test = new Board();
+	/**
+	 *   0 0 0 0 0 0 0 0 0 0 0 
+	 *   0 0 0 0 0 2 0 0 0 0 0 
+	 *   0 0 0 0 0 2 0 0 0 0 0 
+	 *   0 0 0 0 0 2 3 3 0 0 0 
+	 *   0 0 0 0 0 0 0 0 0 0 0 
+	 *   0 0 0 0 0 0 0 0 0 0 0 
+	 *   0 0 0 0 0 0 0 0 0 0 0 
+	 *   
+	 */
 ?>
+
+
+
