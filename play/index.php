@@ -1,15 +1,36 @@
 <?php
 	include "../common/Board.php";
 	include "../common/Play.php";
+	include "../common/Response.php";
 	
 	validateURLParameters();
 	
  	function validateURLParameters(){
+ 		
  		$pid =  $_GET["pid"];
+ 		
  		if(!$pid){
- 			echo "failed";
+ 			echo "Pid not specified";
  		}
- 		//{"response": false, "reason": "Pid not specified"}
+ 		else if( !file_exists($pid . ".txt") ){
+ 			echo "Unknown pid";
+ 		}
+ 		
+ 		$shot =  $_GET["shot"];
+ 		if(!$pid){
+ 			echo "Shot not specified";
+ 		}
+ 		
+ 		$coordinates = explode(",", $shot);
+ 		if( sizeof($coordinates) != 2){
+ 			"Shot not well-formed";
+ 		}
+ 		
+ 		foreach ($coordinates as $coordinate){
+ 			if($coordinate > 10 || $coordinate < 10){
+ 				echo "Invalid shot position";
+ 			}
+ 		}	
  	}
  	
 	//$test = new Board();
@@ -30,6 +51,14 @@
 // 	$test->fireAt($shot);
 // 	print_r($test);
 // 	print_r(json_encode($shot));
+	$test = new Response(true);
+	
+	function is_not_null($var)
+	{
+		return !is_null($var);
+	}
+	
+	echo json_encode(array_filter((array) $test, 'is_not_null'));
 	
 	/**
 	 *   0 0 0 0 0 0 0 0 0 0 

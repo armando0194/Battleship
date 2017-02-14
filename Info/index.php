@@ -10,7 +10,6 @@
 			$this->strategies = $Strategies;
 			$this->ships = $Ships;
 		}
-		
 	}
 	
 	class Ship{
@@ -25,6 +24,7 @@
 	}
 	
 	function returnInfoJson() {
+		
 		//Create new ships
 		$aircraft = new Ship("Aircraft carrier", 5);
 		$battleship = new Ship("Battleship", 4);
