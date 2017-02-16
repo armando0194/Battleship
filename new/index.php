@@ -4,6 +4,11 @@ include "../common/Board.php";
 include "../common/GlobalFunctions.php";
 
 newGame();
+
+/* new Game class 
+ * response is a boolean: true - if success ; false - if error was found on new game
+ * pid - unique id of the current game
+ */
 class newGame {
 	public $response;
 	public $pid;
@@ -17,12 +22,20 @@ class newGame {
 		json_encode(array_filter((array) $this, 'is_not_null'));
 	}
 }
+/*
+ * Check for any errors on the url parameters
+ * if no error is found return a json with the response and pid
+ */
 function newGame(){
-	if(checkURLParameters())
-	$newGameResponse = new newGame(true);
-	$newGameResponse ->toJson($this);
+	if(checkURLParameters()){
+		$newGameResponse = new newGame(true);
+		$newGameResponse ->toJson($this);
+	}
 }
-
+/*
+ * Read strategy url parameters and check for any errors on it
+ * return a json with the error message if necessesary
+ */
 function getStrategy(){
 	$strategy =  $_GET['strategy'];
 	strtolower($strategy);
@@ -37,7 +50,10 @@ function getStrategy(){
 	}
 	echo json_encode(array_filter((array) $strategyErrorResponse, 'is_not_null'));
 }
-
+/*
+ * Check for ship deployment on url parameters
+ * return an error message in json form when necessary
+ */
 function getDeployment(){
 	$ships = $_GET['ships'];
 	if(!$ships){
@@ -65,6 +81,11 @@ function getDeployment(){
 	}
 	
 }
+/*
+ * Check for possible conflicts on ship direction
+ * true-horizontal
+ * false- vertical
+ */
 function validateShipDirection($xPos,$yPos,$direction){
 	if($xPos == 10 && $direction){
 		return true;
@@ -74,12 +95,19 @@ function validateShipDirection($xPos,$yPos,$direction){
 	}
 	return false;
 }
+/*
+ * check for ship misplacement on board
+ * x and y positions should be withing range of board size 1-10
+ */
 function validateShipPosition($pos){
 	if($pos < 1 || $pos > 10){
 		return true;
 	}
 	return false;
 }
+/*
+ * Check all ship names and verify that the correct ships were placed.
+ */
 function validateShipName($name){
 	strtolower($name);
 	if(!$name || $name !="battleship" ||  $name !="aircraft+carrier" ||  $name !="submarine" || $name !="frigate" ||  $name !="minesweeper"){
@@ -88,7 +116,9 @@ function validateShipName($name){
 
 	return false;
 }
-
+/*
+ * Check url parameters
+ */
 function checkURLParameters(){
 	$strategy = getStrategy();
 	$deployment = getDeployment();
