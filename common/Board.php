@@ -53,16 +53,6 @@
 										self::SUBMARINE => 3,
 										self::MINESWEEPER => 2);
 		}
-		/**
-		 * Set ship counters to check if a ship has been destroyed
-		 */
-		function setShipsCounter(){
-			$this->shipCounter = Array( AIRCRAFT => 5,
-					BATTLESHIP => 4,
-					FRIGATE => 3,
-					SUBMARINE => 3,
-					MINESWEEPER => 2);
-		}
 		
 		/**
 		 *
@@ -72,10 +62,12 @@
 			$x = $shot->getX();
 			$y = $shot->getY();
 		
-			if( !$this->isCellEmpty($x, $y) ){
-				$this->checkCollision($shot);
-				$this->board[$x][$y] = $this->hit;
+			if( $this->isCellEmpty($x, $y) ){
+				$this->checkCollision( $shot );
+				$this->board[$x][$y] = self::HIT;
+				return true;
 			}
+			return false;
 		}
 		
 		/**
@@ -85,7 +77,7 @@
 		 * @return boolean true if cell is empty, false otherwise
 		 */
 		function isCellEmpty($xPos, $yPos){
-			if($this->board[$xPos][$yPos] < 1){
+			if($this->board[$xPos][$yPos] != 1){
 				return true;
 			}
 			return false;
@@ -99,7 +91,7 @@
 			$hitCell = $this->board[$shot->getX()][$shot->getY()];
 		
 			// if cell is empty, the player didn't hit a ship
-			if($hitCell == $this->empty){
+			if($hitCell == self::EMPTYCELL){
 				return;
 			}
 		

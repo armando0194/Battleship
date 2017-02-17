@@ -12,7 +12,15 @@ class Game {
 		$this->difficulty = $difficulty;
 	}
 
-	public static function mapJsonToClass($json){
+	function getComputerPlayer(){
+		return $this->players[1];
+	}
+	
+	function getClientPlayer(){
+		return $this->players[0];
+	}
+	
+	static function mapJsonToClass($json){
 		$data = json_decode($json);
 		$instance = new self("","");
 		$clientShips = array();
@@ -42,12 +50,12 @@ class Game {
 	 * Json but it ommits null values.
 	 * @return json in a string
 	 */
-	public function toJson()
+	function toJson()
 	{
 		return json_encode($this);
 	}
 	
-	public function jsonToFile(){
+	function jsonToFile(){
 		file_put_contents( "../play/games/" . $pid . ".txt", $this->toJson() );
 	}
 }

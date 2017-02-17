@@ -6,16 +6,15 @@ include "../common/Shot.php";
 include "../common/Response.php";
 include "../common/GlobalFunctions.php";
 
-//$pid = getPidValue();
+$pid = getPidValue();
 $pid = "test";
 if ( empty($pid) ){
 	return;
 }
-// $shot = getShotValue();
-$shot = new Shot(1, 1);
-if ( empty($shot) ){
-	return;
-}
+$json = file_get_contents("test.txt");
+$game = Game::mapJsonToClass($json);
+attemptClientShot($game);
+
 
 // $ships = array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
 // $ships2 = array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
@@ -31,9 +30,7 @@ if ( empty($shot) ){
 // $game = new Game($players, "Smart");
 // file_put_contents( "test.txt", json_encode($game) );
 
-$json = file_get_contents("test.txt");
-$game = Game::mapJsonToClass($json);
-echo $game->toJson();
+
 
 
 function getPidValue() {
@@ -58,21 +55,21 @@ function getPidValue() {
  * 
  * @return Play
  */
-function getShotValue() {
+function attemptClientShot($game) {
 	$shot = $_GET ["shot"];
 	$coordinates = explode ( ",", $shot );
 	
 	if (! $shot) {
-		// checks if the shot is empty
+	// checks if the shot is empty
 		$shotErrorResponse = Response::withReason ("Shot not specified");
 	} else if (sizeof ( $coordinates ) != 2) {
-		// checks if there are two coordinates
+	// checks if there are two coordinates
 		$shotErrorResponse = Response::withReason("Shot not well-formed");
-	} else if ( !areCoordinatesValid($coordinates) ){
-		// checks if the coordinates are between 1 and 10
+	} else if ( !areCoordinatesValid($coordinates) || $game->getComputerPlayer()->getBoard()->fireAt(new Shot($coordinates[0], $coordinates[1])) ) {
+	// checks if the coordinates are between 1 and 10
 		$shotErrorResponse = Response::withReason("Invalid shot position");
 	} else {
-		return new Shot($coordinates[0], $coordinates[1]);
+		return new Shot( $coordinates[0], $coordinates[1] );
 	}
 	
 	echo $shotErrorResponse->toJson();

@@ -8,6 +8,10 @@ class Player{
 		$this->ships = $ships;
 	}
 	
+	function getBoard(){
+		return $this->board;
+	}
+	
 	function toJson()
 	{
 		return json_encode($this);
