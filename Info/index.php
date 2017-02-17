@@ -1,44 +1,44 @@
 <?php
-	class Info {
-		public $size;
-		public $strategies;
-		public $ships;
-		
-		function __construct($Size, $Strategies, $Ships) 
-		{
-			$this->size = $Size;
-			$this->strategies = $Strategies;
-			$this->ships = $Ships;
-		}
+
+//define info properties
+define("BOARD_SIZE", 10);
+$ships = Array(new Ship("Aircraft carrier", 5), new Ship("Battleship", 4), new Ship("Frigate", 3), new Ship("Submarine", 3), new Ship("Minesweeper", 2));
+$strategies = Array("Smart", "Random", "Sweep");
+
+//create object and return it as a json
+$info = new Info(BOARD_SIZE, $strategies, $ships);
+echo $info->toJson();
+
+	
+
+class Info {
+	public $size;
+	public $strategies;
+	public $ships;
+
+	function __construct($Size, $Strategies, $Ships)
+	{
+		$this->size = $Size;
+		$this->strategies = $Strategies;
+		$this->ships = $Ships;
 	}
 	
-	class Ship{
-		public $name;
-		public $size;
-		
-		function __construct($Name, $Size)
-		{
-			$this->size = $Size;
-			$this->name = $Name;
-		}
+	function toJson(){
+		return json_encode( $this );
 	}
-	
-	function returnInfoJson() {
-		
-		//Create new ships
-		$aircraft = new Ship("Aircraft carrier", 5);
-		$battleship = new Ship("Battleship", 4);
-		$frigate = new Ship("Frigate", 3);
-		$submarine = new Ship("Submarine", 3);
-		$minesweeper = new Ship("Minesweeper", 2);
-		
-		//create json and return it
-		$InfoObject = new Info(10, Array("Smart", "Random", "Sweep"), Array($aircraft, $battleship, $frigate, $submarine, $minesweeper));
-		header('Content-Type: application/json');
-		echo json_encode($InfoObject);
+}
+
+class Ship{
+	public $name;
+	public $size;
+
+	function __construct($Name, $Size)
+	{
+		$this->size = $Size;
+		$this->name = $Name;
 	}
-	
-	returnInfoJson();
+}
+
 ?>
 
 

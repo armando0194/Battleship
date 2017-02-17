@@ -1,5 +1,5 @@
 <?php
-	class Play{
+	class Shot{
 		public $x;
 		public $y;
 		public $isHit;   // hit a ship?

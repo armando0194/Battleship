@@ -6,11 +6,11 @@
  */
 
 class Response implements \JsonSerializable{
-	public $response;
-	public $reason;
-	public $pid;
-	public $ack_shot;
-	public $shot;
+	private $response;
+	private $reason;
+	private $pid;
+	private $ack_shot;
+	private $shot;
 	
 	/**
 	 * constructor
@@ -20,19 +20,22 @@ class Response implements \JsonSerializable{
 		$this->response = $response;
 	}
 	
-	public static function withReason( $reason ) {
+	public static function withReason( $reason )
+	{
 		$instance = new self( false );
 		$instance->reason = $reason;
 		return $instance;
 	}
 	
-	public static function withPid() {
+	public static function withPid() 
+	{
 		$instance = new self( true );
 		$instance->pid = uniqid();
 		return $instance;
 	}
 	
-	public static function withShots($shot, $ack_shot) {
+	public static function withShots($shot, $ack_shot) 
+	{
 		$instance = new self( true );
 		$instance->shot = $shot;
 		$instance->ack_shot = $ack_shot;
@@ -44,6 +47,23 @@ class Response implements \JsonSerializable{
 		$vars = get_object_vars($this);
 	
 		return $vars;
+	}
+	
+	/**
+	 * Clones the current object, and converts it to
+	 * Json but it ommits null values.
+	 * @return json in a string
+	 */
+	public function toJson()
+	{
+		$obj = clone $this;
+		$keys = get_object_vars($obj);
+		foreach ($keys as $key => $value) {
+			if ( is_null($value) ) {
+				unset($obj->{$key});
+			}
+		}
+		return json_encode($obj);
 	}
 }
 
