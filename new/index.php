@@ -2,36 +2,51 @@
 include "../common/Response.php";
 include "../common/Board.php";
 include "../common/GlobalFunctions.php";
+include "../play/Game.php";
+include "../play/Ship.php";
+include "../play/Player.php";
+
 
 newGame();
 
-/* new Game class 
- * response is a boolean: true - if success ; false - if error was found on new game
- * pid - unique id of the current game
- */
-class newGame {
-	public $response;
-	public $pid;
-	
+////////////////////////////////New Game creation//////////////////////
 
-	function __construct($response){
-		$this->response = $response;
-		$this->pid = uniqid();
-	}
-	function toJson($this){
-		json_encode(array_filter((array) $this, 'is_not_null'));
-	}
-}
+ 
+
+
+
 /*
- * Check for any errors on the url parameters
- * if no error is found return a json with the response and pid
+ * Generate the board and ship deployment for AI and human player
+ * generate new game
+ * save game into a text file
  */
 function newGame(){
-	if(checkURLParameters()){
-		$newGameResponse = new newGame(true);
-		$newGameResponse ->toJson($this);
+	$strategy = getStrategy();
+	//generate human player board and ship deployment
+	$urlShips = $_GET['ships'];
+	if(!$urLships){
+		$playerShips = randomDeployment();
+	}else{
+		$playerShips = getDeployment();
 	}
+	$playerBoard = new Board($playerShips);
+	$humanPlayer = new Player($playerBoard,$playerShips);
+	$pid = uniqid();
+	//generate AI Player board and ship deployment
+	$AIShips = randomDeployment();
+	$AIBoard = new Board($AIShips);
+	$AIPlayer = new ComputerPlayer($strategy,$AIBoard,$AIShips);
+	//generate players and game
+	$players = Array($humanPlayer,$AIPlayer);
+	$game = new Game($players,$strategy,$pid);
+	$game -> jsonToFile();
 }
+
+function randomDeployment(){
+	$deployment= array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
+	return $deployment;
+}
+//////////////////////URL Parameter validation//////////////////////////
 /*
  * Read strategy url parameters and check for any errors on it
  * return a json with the error message if necessesary
@@ -56,19 +71,18 @@ function getStrategy(){
  */
 function getDeployment(){
 	$ships = $_GET['ships'];
-	if(!$ships){
-		return; // gen random deployment
-	}
 	$ships = explode(";",$ships);
 	if(sizeof($ships) != 5){
 		$deploymentErrorMessage = Response::withReason("Ship Deployment not well formed");
 	}
+	$deployment = Array();
 	$ships = explode(",",$ships);
 	foreach($ships as $ship){
 		if(sizeof($ship) !=4){
 			$deploymentErrorMessage = Response::withReason("Incomplete ship deployment");
 		}
-		list($name,$xPos,$yPos,$direction) = explode(",",$ship);
+		$currShip= list($name,$xPos,$yPos,$direction) = explode(",",$ship);
+		
 		if(validateShipName($name)){
 			$deploymentErrorMessage = Response::withReason("Unknown ship name");
 		}
@@ -78,7 +92,14 @@ function getDeployment(){
 		if(validateShipDirection($xPos,$yPos,$direction)){
 			$deploymentErrorMessage = Response::withReason("Invalid Ship Direction");
 		}
+		$currShip = new Ship($name,$xPos,$yPos,$direction);
+		array_push($deployment,$currShip);
+		
 	}
+	return $deployment;
+	
+	
+	
 	
 }
 /*
@@ -116,12 +137,6 @@ function validateShipName($name){
 
 	return false;
 }
-/*
- * Check url parameters
- */
-function checkURLParameters(){
-	$strategy = getStrategy();
-	$deployment = getDeployment();
 
-}
+
 ?>
