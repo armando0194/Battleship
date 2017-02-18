@@ -1,6 +1,7 @@
 <?php
 	class Board{
 		public $board;
+		public $ships;
 	
 		//Ships
 		public $shipCounter;
@@ -20,24 +21,54 @@
 		const SUBMARINE = 5;
 		const MINESWEEPER = 6;
 	
-		function __construct($board){
+		function __construct($board,$ships){
 			if( empty($board) ){
 				$this->initBoard();
+				$ships-> randomDeployment();
 			}
 			else{
 				$this->board = $board;
+				$this->ships = $ships;
 			}
 			$this->setShipsCounter();
 		}
-	
+		/*
+		 * Generate a random ship deployment in a board
+		 */
+		function randomDeployment(){
+			//$deployment= array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
+			for($shipSize = 2; $shipSize<5; $i++){
+				$direction = rand(0,1);
+				if($direction){
+					$offset = self::COLUMNS - $shipSize - 1;
+					$xPos = rand(1,offset);
+					$yPos = rand(1,self::ROWS);
+				}else{
+					$offset = self::ROWS -$shipSize - 1;
+					$xPos = rand(1,self::COLUMNS);
+					$yPos = rand(1,offset);
+				}
+				
+				placeShipOnBoard($direction,$xPos,$yPos,$shipSize);
+			}
+		}
+		function placeShipOnBoard($direction,$xPos,$yPos,$shipSize){
+			for($start=0;$start < $shipSize ; $start++){
+				if($direction){
+					$this->board[$xPos + $start][$yPos] = $shipSize;
+				}else{
+					$this->board[$xPos][$yPos + $start] = $shipSize;
+				}
+			}
+		}
 		/**
 		 * 
 		 */
 		function initBoard(){
 			$this->board = Array();
-			for ($currRow = 0; $currRow < self::ROWS; $currRow++){
+			for ($currRow = 1; $currRow <= self::ROWS; $currRow++){
 				array_push($this->board, Array());
-				for ($currCol = 0; $currCol < self::COLUMNS; $currCol++){
+				for ($currCol = 1; $currCol <= self::COLUMNS; $currCol++){
 					array_push($this->board[$currRow], self::EMPTYCELL);
 				}
 			}

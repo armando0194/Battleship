@@ -31,21 +31,21 @@ function newGame(){
 	}
 	$playerBoard = new Board($playerShips);
 	$humanPlayer = new Player($playerBoard,$playerShips);
-	$pid = uniqid();
+	
 	//generate AI Player board and ship deployment
 	$AIShips = randomDeployment();
 	$AIBoard = new Board($AIShips);
 	$AIPlayer = new ComputerPlayer($strategy,$AIBoard,$AIShips);
 	//generate players and game
 	$players = Array($humanPlayer,$AIPlayer);
-	$game = new Game($players,$strategy,$pid);
+	$response = Response::withPid();
+	
+	$game = new Game($players,$strategy,$response->getPid());
 	$game -> jsonToFile();
+	echo $response;
 }
 
-function randomDeployment(){
-	$deployment= array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
-	return $deployment;
-}
+
 //////////////////////URL Parameter validation//////////////////////////
 /*
  * Read strategy url parameters and check for any errors on it

@@ -1,11 +1,11 @@
 <?php
 class Player{
 	public $board;
-	public $ships;
 	
-	function __construct($board, $ships){
+	
+	function __construct($board){
 		$this->board = $board;
-		$this->ships = $ships;
+		
 	}
 	
 	function getBoard(){
@@ -22,8 +22,8 @@ class Player{
 class ComputerPlayer extends Player  {
 	public $strategy;
 	
-	function __construct($strategy, $board, $ships){
-		parent::__construct($board, $ships);
+	function __construct($strategy, $board){
+		parent::__construct($board);
 		$this->strategy = $strategy;	
 	}
 	
