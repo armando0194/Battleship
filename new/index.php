@@ -16,6 +16,7 @@ newGame();
 
 
 /*
+ * s
  * Generate the board and ship deployment for AI and human player
  * generate new game
  * save game into a text file
