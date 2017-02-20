@@ -21,10 +21,12 @@
 		const SUBMARINE = 5;
 		const MINESWEEPER = 6;
 	
+		public $trackback = false;
+		
 		function __construct($board,$ships){
 			if( empty($board) ){
 				$this->initBoard();
-				$ships-> randomDeployment();
+				$this-> randomDeployment();
 			}
 			else{
 				$this->board = $board;
@@ -32,26 +34,65 @@
 			}
 			$this->setShipsCounter();
 		}
+		
+		function placeShip($xPos, $yPos, $direction, $endPosition, $ship){
+		
+			$this->trackback = true;
+			if($direction) {
+				if( $this->isCellOccupied($xPos, $yPos) ){
+					return false;
+				} else if ($xPos == $endPosition){
+					//$this->board[$xPos][$yPos] = $ship;
+					return true;
+				}
+				else{
+					$this->trackback = $this->trackback && $this->placeShip($xPos + 1, $yPos, $direction, $endPosition, $ship);
+				}
+			}
+			else {
+				if( $this->isCellOccupied($xPos, $yPos) ){
+					return false;
+				} else if ($yPos == $endPosition){
+					//$this->board[$xPos][$yPos] = $ship;
+					return true;
+				}
+				else{
+					$this->trackback = $this->trackback && $this->placeShip($xPos, $yPos + 1, $direction, $endPosition, $ship);
+				}
+			}
+		
+			if( !$this->trackback ){
+				$this->board[$xPos][$yPos] = $ship;
+			}
+		
+		}
 		/*
 		 * Generate a random ship deployment in a board
 		 */
 		function randomDeployment(){
 			//$deployment= array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
-			for($shipSize = 2; $shipSize<5; $i++){
+			for($shipSize = 2; $shipSize <= 5; $shipSize++){
 				$direction = rand(0,1);
-				if($direction){
-					$offset = self::COLUMNS - $shipSize - 1;
-					$xPos = rand(1,offset);
-					$yPos = rand(1,self::ROWS);
-				}else{
-					$offset = self::ROWS -$shipSize - 1;
-					$xPos = rand(1,self::COLUMNS);
-					$yPos = rand(1,offset);
-				}
+				//do{
+					if($direction){
+						$offset = self::COLUMNS - ($shipSize - 1);
+						$xPos = rand(1, $offset);
+						$yPos = rand(1, intval(self::ROWS) );
+						$this->placeShip($xPos, $yPos, $direction, $xPos + ($shipSize-1), $shipSize);
+					} else {
+						$offset = self::ROWS - ($shipSize - 1);
+						$xPos = rand(1, intval(self::COLUMNS) );
+						$yPos = rand(1, $offset);
+						$this->placeShip($xPos, $yPos, $direction, $yPos + ($shipSize-1), $shipSize);
+					}
+					
+				//}while( !$this->trackback );
 				
-				placeShipOnBoard($direction,$xPos,$yPos,$shipSize);
+				//placeShipOnBoard($direction,$xPos,$yPos,$shipSize);
+				//$this->printBoard();
 			}
 		}
+		/*
 		function placeShipOnBoard($direction,$xPos,$yPos,$shipSize){
 			for($start=0;$start < $shipSize ; $start++){
 				if($direction){
@@ -60,16 +101,16 @@
 					$this->board[$xPos][$yPos + $start] = $shipSize;
 				}
 			}
-		}
+		}*/
 		/**
 		 * 
 		 */
 		function initBoard(){
 			$this->board = Array();
 			for ($currRow = 1; $currRow <= self::ROWS; $currRow++){
-				array_push($this->board, Array());
+				$this->board[$currRow] = Array();
 				for ($currCol = 1; $currCol <= self::COLUMNS; $currCol++){
-					array_push($this->board[$currRow], self::EMPTYCELL);
+					$this->board[$currRow][$currCol] = self::EMPTYCELL;
 				}
 			}
 		}
@@ -156,6 +197,23 @@
 			else{
 				return false;
 			}
+		}
+		
+		function isCellOccupied($xPos, $yPos){
+			if( $this->board[$xPos][$yPos] > 1 ){
+				return true;
+			}
+			return false;
+		}
+		
+		function printBoard(){
+			for ($i = 0; $i < self::ROWS; $i++){
+				for ($j = 0; $j < self::ROWS; $j++){
+					echo $this->board[$i][$j] . " ";
+				}
+				echo PHP_EOL;
+			}
+				
 		}
 	}
 ?>

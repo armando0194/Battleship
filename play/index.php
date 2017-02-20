@@ -6,15 +6,20 @@ include "../common/Shot.php";
 include "../common/Response.php";
 include "../common/GlobalFunctions.php";
 
-$pid = getPidValue();
-$pid = "test";
-if ( empty($pid) ){
-	return;
-}
-$json = file_get_contents("test.txt");
-$game = Game::mapJsonToClass($json);
-attemptClientShot($game);
+// $pid = getPidValue();
+// $pid = "test";
+// if ( empty($pid) ){
+// 	return;
+// }
 
+// $json = file_get_contents("test.txt");
+// $game = Game::mapJsonToClass($json);
+// attemptClientShot($game);
+
+$board = new Board(null, null);
+// $board -> placeShip(1, 1, true, 2, 3);
+// $board -> placeShip(1, 1, true, 2, 4);
+$board->printBoard();
 
 // $ships = array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
 // $ships2 = array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );

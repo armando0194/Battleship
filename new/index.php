@@ -4,7 +4,6 @@ include "../common/Board.php";
 include "../common/GlobalFunctions.php";
 include "../play/Game.php";
 include "../play/Ship.php";
-include "../play/Player.php";
 
 
 newGame();
@@ -23,19 +22,21 @@ newGame();
  */
 function newGame(){
 	$strategy = getStrategy();
+	//stop if startegy null
+	
 	//generate human player board and ship deployment
 	$urlShips = $_GET['ships'];
-	if(!$urLships){
-		$playerShips = randomDeployment();
+	if($urLships){
+		//instantiate board with null value board
 	}else{
 		$playerShips = getDeployment();
 	}
-	$playerBoard = new Board($playerShips);
+	$playerBoard = new Board(null,$playerShips);
 	$humanPlayer = new Player($playerBoard,$playerShips);
 	
 	//generate AI Player board and ship deployment
-	$AIShips = randomDeployment();
-	$AIBoard = new Board($AIShips);
+	//$AIShips = randomDeployment();
+	$AIBoard = new Board(null,$AIShips);
 	$AIPlayer = new ComputerPlayer($strategy,$AIBoard,$AIShips);
 	//generate players and game
 	$players = Array($humanPlayer,$AIPlayer);
@@ -43,7 +44,7 @@ function newGame(){
 	
 	$game = new Game($players,$strategy,$response->getPid());
 	$game -> jsonToFile();
-	echo $response;
+	echo $response->toJson();
 }
 
 
@@ -54,17 +55,19 @@ function newGame(){
  */
 function getStrategy(){
 	$strategy =  $_GET['strategy'];
-	strtolower($strategy);
+
 	if(!$strategy){
 		$strategyErrorMessage = Response::withReason("Strategy not specified");
 	}
-	if($strategy != "smart" || $strategy != "random" || $strategy != "sweep") {
+	// fix comparison
+	else if($strategy != "Smart" || $strategy != "Random" || $strategy != "Sweep") {
 		$strategyErrorMessage = Response::withReason("Unknown Strategy");
 	}
 	else {
+		//$start = new $strategy();
 		return $strategy;
 	}
-	echo json_encode(array_filter((array) $strategyErrorResponse, 'is_not_null'));
+	echo $strategyErrorMessage->toJson();
 }
 /*
  * Check for ship deployment on url parameters
