@@ -1,6 +1,8 @@
 <?php
 include "../common/Shot.php";
 include "../common/Board.php";
+
+//COment
 	class Smart implements Strategy{
 		public $lastShot;
 		
