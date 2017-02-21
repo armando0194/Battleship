@@ -18,15 +18,22 @@
 		const SUBMARINE = 5;
 		const MINESWEEPER = 6;
 		
-		function __construct($board,$ships){
-			if( empty($board) ){
-				$this->initBoard();
-				$this-> randomDeployment();
-			}
-			else{
-				$this->board = $board;
-				$this->ships = $ships;
-			}
+		function __construct($board, $ships){
+			$this->board = $board;
+			$this->ships = $ships;
+		}
+		
+		static function withRandomDeployment(){
+			$instance = new self(null, null);
+			$instance->initBoard();
+			$instance-> randomDeployment();
+			return $instance;
+		}
+		
+		static function withEmptyBoard(){
+			$instance = new self(null, null);
+			$instance->initBoard();
+			return $instance;
 		}
 		
 		function placeShip($xPos, $yPos, $direction, $endPosition, $ship){
@@ -92,12 +99,12 @@
 						$result = $this->placeShip($xPos, $yPos, $direction, $yPos + ($ship->getSize() - 1), $shipNumber);
 					}
 		
-					echo "Ship: " . $shipSize . ", x: " . $yPos . ", y: " . $xPos . ", direction: " .  (($direction == true)? "horizontal, ": "vertical, ") . " result: " .( $result ) . PHP_EOL ;
+					//echo "Ship: " . $shipSize . ", x: " . $yPos . ", y: " . $xPos . ", direction: " .  (($direction == true)? "horizontal, ": "vertical, ") . " result: " .( $result ) . PHP_EOL ;
 				}
 				$ship->setPositionAndDirection($xPos, $yPos, $direction);
 			}
 				
-			print_r($this->ships);
+			//print_r($this->ships);
 		}
 		
 		
@@ -199,6 +206,10 @@
 				echo PHP_EOL;
 			}
 				
+		}
+		
+		function setShips($ships){
+			$this->ships = $ships;
 		}
 	}
 ?>

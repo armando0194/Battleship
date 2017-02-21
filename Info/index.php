@@ -1,26 +1,25 @@
 <?php
+include "../common/Ship.php";
 
 //define info properties
 define("BOARD_SIZE", 10);
-$ships = Array(new Ship("Aircraft carrier", 5), new Ship("Battleship", 4), new Ship("Frigate", 3), new Ship("Submarine", 3), new Ship("Minesweeper", 2));
+$ShipInfos = Array(new ShipInfo("Aircraft carrier", 5), new ShipInfo("Battleship", 4), new ShipInfo("Frigate", 3), new ShipInfo("Submarine", 3), new ShipInfo("Minesweeper", 2));
 $strategies = Array("Smart", "Random", "Sweep");
 
 //create object and return it as a json
-$info = new Info(BOARD_SIZE, $strategies, $ships);
+$info = new Info(BOARD_SIZE, $strategies, $ShipInfos);
 echo $info->toJson();
-
-	
 
 class Info {
 	public $size;
 	public $strategies;
-	public $ships;
+	public $ShipInfos;
 
-	function __construct($Size, $Strategies, $Ships)
+	function __construct($size, $strategies, $ship)
 	{
-		$this->size = $Size;
-		$this->strategies = $Strategies;
-		$this->ships = $Ships;
+		$this->size = $size;
+		$this->strategies = $strategies;
+		$this->ShipInfos = $ship;
 	}
 	
 	function toJson(){
@@ -28,7 +27,8 @@ class Info {
 	}
 }
 
-class Ship{
+
+class ShipInfo{
 	public $name;
 	public $size;
 
@@ -38,7 +38,6 @@ class Ship{
 		$this->name = $Name;
 	}
 }
-
 ?>
 
 

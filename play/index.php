@@ -1,42 +1,27 @@
 <?php
 include "../common/Board.php";
 include "Game.php";
-include "Ship.php";
+include "../common/Ship.php";
 include "../common/Shot.php";
 include "../common/Response.php";
-include "../common/GlobalFunctions.php";
 
-// $pid = getPidValue();
-// $pid = "test";
-// if ( empty($pid) ){
+// validate pid URL parameter
+//$pid = getPidValue();
+$pid = "58abcbcd3ee2d";
+//if the pid is empty, stop excecution
+if ( empty($pid) ){
+	return;
+}
+
+//Read game state from file and map it to a game class
+$json = file_get_contents("games/" . $pid . ".txt");
+$game = Game::mapJsonToClass($json);
+print_r( $game );
+// $clienShot = attemptClientShot($game);
+
+// if ( empty($clienShot) ){
 // 	return;
 // }
-
-// $json = file_get_contents("test.txt");
-// $game = Game::mapJsonToClass($json);
-// attemptClientShot($game);
-
-$board = new Board(null, null);
-//$board->printBoard();
-$shot =  new Shot(1, 1);
-
-$board->fireAt($shot);
-$board->printBoard();
-
-// $ships = array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
-// $ships2 = array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
-
-// $board = new Board(null);
-// $board2 = new Board(null);
-
-// $player = new Player($board, $ships);
-// $compPlayer = new ComputerPlayer("Smart", $board2, $ships2);
-
-// $players = Array($player, $compPlayer);
-
-// $game = new Game($players, "Smart");
-// file_put_contents( "test.txt", json_encode($game) );
-
 
 
 

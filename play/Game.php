@@ -7,9 +7,10 @@ class Game {
 	public $difficulty;
 	public $pid;
 	
-	function __construct($players, $difficulty){
+	function __construct($players, $difficulty, $pid){
 		$this->players = $players;
 		$this->difficulty = $difficulty;
+		$this->pid = $pid;
 	}
 
 	function getComputerPlayer(){
@@ -21,8 +22,8 @@ class Game {
 	}
 	
 	static function mapJsonToClass($json){
-		$data = json_decode($json);
-		$instance = new self("","");
+		/*$data = json_decode($json);
+		$instance = new self(null, null, null);
 		$clientShips = array();
 		$serverShips = array();
 		$numeberOfShips = 5;
@@ -42,7 +43,7 @@ class Game {
 		
 		$instance->players = Array($player, $compPlayer);
 		$instance->difficulty = $data->difficulty;
-		return $instance;
+		return $instance;*/
 	}
 	
 	/**
@@ -56,7 +57,7 @@ class Game {
 	}
 	
 	function jsonToFile(){
-		file_put_contents( "../play/games/" . $pid . ".txt", $this->toJson() );
+		file_put_contents( "../play/games/" . $this->pid . ".txt", $this->toJson() );
 	}
 }
 ?>

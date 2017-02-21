@@ -19,9 +19,11 @@ class Response implements \JsonSerializable{
 	{
 		$this->response = $response;
 	}
+	
 	public function getPid(){
 		return $this -> pid;
 	}
+	
 	public static function withReason( $reason )
 	{
 		$instance = new self( false );

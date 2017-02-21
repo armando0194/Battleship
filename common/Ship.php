@@ -37,4 +37,5 @@
 			return ($this->hitCounter == 0) ? true : false;
 		}
 	}
+	
 ?>
