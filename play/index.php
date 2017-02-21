@@ -17,8 +17,10 @@ include "../common/GlobalFunctions.php";
 // attemptClientShot($game);
 
 $board = new Board(null, null);
-// $board -> placeShip(1, 1, true, 2, 3);
-// $board -> placeShip(1, 1, true, 2, 4);
+//$board->printBoard();
+$shot =  new Shot(1, 1);
+
+$board->fireAt($shot);
 $board->printBoard();
 
 // $ships = array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );

@@ -3,9 +3,6 @@
 		public $board;
 		public $ships;
 	
-		//Ships
-		public $shipCounter;
-	
 		//Board dimension
 		const ROWS = 10;
 		const COLUMNS = 10;
@@ -20,8 +17,6 @@
 		const FRIGATE = 4;
 		const SUBMARINE = 5;
 		const MINESWEEPER = 6;
-	
-		public $trackback = false;
 		
 		function __construct($board,$ships){
 			if( empty($board) ){
@@ -32,76 +27,81 @@
 				$this->board = $board;
 				$this->ships = $ships;
 			}
-			$this->setShipsCounter();
 		}
 		
 		function placeShip($xPos, $yPos, $direction, $endPosition, $ship){
 		
-			$this->trackback = true;
+			$isShipPositionValid = true;
 			if($direction) {
 				if( $this->isCellOccupied($xPos, $yPos) ){
 					return false;
 				} else if ($xPos == $endPosition){
-					//$this->board[$xPos][$yPos] = $ship;
+					$this->board[$xPos][$yPos] = $ship;
 					return true;
 				}
 				else{
-					$this->trackback = $this->trackback && $this->placeShip($xPos + 1, $yPos, $direction, $endPosition, $ship);
+					$isShipPositionValid = $isShipPositionValid && $this->placeShip($xPos + 1, $yPos, $direction, $endPosition, $ship);
 				}
 			}
 			else {
 				if( $this->isCellOccupied($xPos, $yPos) ){
 					return false;
 				} else if ($yPos == $endPosition){
-					//$this->board[$xPos][$yPos] = $ship;
+					$this->board[$xPos][$yPos] = $ship;
 					return true;
 				}
 				else{
-					$this->trackback = $this->trackback && $this->placeShip($xPos, $yPos + 1, $direction, $endPosition, $ship);
+					$isShipPositionValid = $isShipPositionValid && $this->placeShip($xPos, $yPos + 1, $direction, $endPosition, $ship);
 				}
 			}
 		
-			if( !$this->trackback ){
+			if( $isShipPositionValid ){
 				$this->board[$xPos][$yPos] = $ship;
+				return true;
+			}
+			else{
+				return false;
 			}
 		
 		}
+		
 		/*
-		 * Generate a random ship deployment in a board
+		 * Generates a random ship deployment and places the 
+		 * ships in the board
 		 */
 		function randomDeployment(){
-			//$deployment= array(  new Ship("Aircraft+carrier",1,6,false), new Ship("Battleship",7,5,true), new Ship("Frigate",2,1,false), new Ship("Submarine",9,6,false), new Ship("Minesweeper",10,9,false) );
-			for($shipSize = 2; $shipSize <= 5; $shipSize++){
-				$direction = rand(0,1);
-				//do{
+			$this->ships = array( self::AIRCRAFT => Ship::withNameAndSize("Aircraft Carrier",5),
+								  self::BATTLESHIP => Ship::withNameAndSize("Battleship",4),
+								  self::FRIGATE => Ship::withNameAndSize("Frigate",3),
+								  self::SUBMARINE => Ship::withNameAndSize("Submarine",3),
+								  self::MINESWEEPER => Ship::withNameAndSize("Minesweeper",2) );
+				
+			foreach ( $this->ships as $shipNumber => $ship ) {
+				$result = false;
+				while( !$result ){
+					$direction = rand(0,1);
 					if($direction){
-						$offset = self::COLUMNS - ($shipSize - 1);
+						$offset = self::COLUMNS - ($ship->getSize() - 1);
 						$xPos = rand(1, $offset);
 						$yPos = rand(1, intval(self::ROWS) );
-						$this->placeShip($xPos, $yPos, $direction, $xPos + ($shipSize-1), $shipSize);
+						$result = $this->placeShip($xPos, $yPos, $direction, $xPos + ($ship->getSize() - 1), $shipNumber);
 					} else {
-						$offset = self::ROWS - ($shipSize - 1);
+						$offset = self::ROWS - ($ship->getSize() - 1);
 						$xPos = rand(1, intval(self::COLUMNS) );
 						$yPos = rand(1, $offset);
-						$this->placeShip($xPos, $yPos, $direction, $yPos + ($shipSize-1), $shipSize);
+						$result = $this->placeShip($xPos, $yPos, $direction, $yPos + ($ship->getSize() - 1), $shipNumber);
 					}
-					
-				//}while( !$this->trackback );
-				
-				//placeShipOnBoard($direction,$xPos,$yPos,$shipSize);
-				//$this->printBoard();
-			}
-		}
-		/*
-		function placeShipOnBoard($direction,$xPos,$yPos,$shipSize){
-			for($start=0;$start < $shipSize ; $start++){
-				if($direction){
-					$this->board[$xPos + $start][$yPos] = $shipSize;
-				}else{
-					$this->board[$xPos][$yPos + $start] = $shipSize;
+		
+					echo "Ship: " . $shipSize . ", x: " . $yPos . ", y: " . $xPos . ", direction: " .  (($direction == true)? "horizontal, ": "vertical, ") . " result: " .( $result ) . PHP_EOL ;
 				}
+				$ship->setPositionAndDirection($xPos, $yPos, $direction);
 			}
-		}*/
+				
+			print_r($this->ships);
+		}
+		
+		
+
 		/**
 		 * 
 		 */
@@ -114,17 +114,6 @@
 				}
 			}
 		}
-	
-		/**
-		 * Set ship counters to check if a ship has been destroyed
-		 */
-		function setShipsCounter(){
-			$this->shipCounter = Array( self::AIRCRAFT => 5,
-										self::BATTLESHIP => 4,
-										self::FRIGATE => 3,
-										self::SUBMARINE => 3,
-										self::MINESWEEPER => 2);
-		}
 		
 		/**
 		 *
@@ -133,10 +122,10 @@
 		function fireAt($shot){
 			$x = $shot->getX();
 			$y = $shot->getY();
-		
-			if( $this->isCellEmpty($x, $y) ){
+			if( $this->isCellEmpty($x, $y) || $this->isCellOccupied($x, $y) ){
 				$this->checkCollision( $shot );
 				$this->board[$x][$y] = self::HIT;
+				print_r($this->ships);
 				return true;
 			}
 			return false;
@@ -168,10 +157,10 @@
 			}
 		
 			//subtract one from the hit ship
-			$this->shipCounter[$hitCell]--;
+			$this->ships[$hitCell]->reduceShipCounter();
 		
 			// if the counter is 0(ship has been destroyed), set sunk to true and check for winner
-			if(!$this->shipCounter[$hitCell]){
+			if( $this->ships[$hitCell]->isShipSunk() ){
 				$shot->setIsSunk(true);
 				$this->checkWinner($shot);
 			}
@@ -184,19 +173,12 @@
 		 * @return boolean
 		 */
 		function checkWinner($shot){
-		
-			// if the ship counters are equal to zero, the current player won
-			if( !$this->shipCounter[AIRCRAFT] &&
-					!$this->shipCounter[BATTLESHIP] &&
-					!$this->shipCounter[FRIGATE] &&
-					!$this->shipCounter[SUBMARINE] &&
-					!$this->shipCounter[MINESWEEPER] ){
-						$shot->setIsWin(true);
-						return true;
+			foreach ( $this->ships as $shipNumber => $ship ) {
+				if( !$ship->isShipSunk() ){
+					return false;
+				}
 			}
-			else{
-				return false;
-			}
+			return true;
 		}
 		
 		function isCellOccupied($xPos, $yPos){
@@ -206,9 +188,12 @@
 			return false;
 		}
 		
+		/**
+		 * Prints Board Testing purposes
+		 */
 		function printBoard(){
-			for ($i = 0; $i < self::ROWS; $i++){
-				for ($j = 0; $j < self::ROWS; $j++){
+			for ($i = 1; $i <= self::ROWS; $i++){
+				for ($j = 1; $j <= self::ROWS; $j++){
 					echo $this->board[$i][$j] . " ";
 				}
 				echo PHP_EOL;
