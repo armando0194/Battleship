@@ -22,28 +22,24 @@ class Game {
 	}
 	
 	static function mapJsonToClass($json){
-		/*$data = json_decode($json);
+		$data = json_decode($json);
+		//print_r($data);
 		$instance = new self(null, null, null);
-		$clientShips = array();
-		$serverShips = array();
 		$numeberOfShips = 5;
 		
-		for($currShip = 0; $currShip < $numeberOfShips; $currShip++){
-			$currClientShip = $data->players[0]->ships[$currShip];
-			$currServerShip = $data->players[1]->ships[$currShip];
-			array_push( $clientShips, new Ship($currClientShip->name, $currClientShip->xPos, $currClientShip->yPos, $currClientShip->direction) );
-			array_push( $serverShips, new Ship($currServerShip->name, $currServerShip->xPos, $currServerShip->yPos, $currServerShip->direction) );
-		}
+		$clientShips = $instance->getShips( $data->players[0]->board->ships );
+		$serverShips = $instance->getShips( $data->players[1]->board->ships );
 
-		$clientBoard = new Board((Array) $data->players[0]->board->board);
-		$serverBoard = new Board((Array) $data->players[1]->board->board);
+		$clientBoard = new Board((Array) $data->players[0]->board->board, $clientShips);
+		$serverBoard = new Board((Array) $data->players[1]->board->board, $serverShips);
 		
-		$player = new Player($clientBoard, $clientShips);
-		$compPlayer = new ComputerPlayer("", $serverBoard, $serverShips);
+		$clientPlayer = new Player($clientBoard);
+		$compPlayer = new ComputerPlayer("", $serverBoard);
 		
-		$instance->players = Array($player, $compPlayer);
-		$instance->difficulty = $data->difficulty;
-		return $instance;*/
+		$instance->players = Array($clientPlayer, $compPlayer);
+		$instance->difficulty = $data->strategy;
+		$instance->pid = $data->pid;
+		return $instance;
 	}
 	
 	/**
@@ -56,6 +52,12 @@ class Game {
 		return json_encode($this);
 	}
 	
+	function getShips($ships){
+		foreach ($ships as $shipNumber => $ship) {
+			$shipDeployment[$shipNumber] = new Ship($ship->name, $ship->size, $ship->xPos, $ship->yPos, $ship->direction);
+		}
+		return $shipDeployment;
+	}
 	function jsonToFile(){
 		file_put_contents( "../play/games/" . $this->pid . ".txt", $this->toJson() );
 	}
