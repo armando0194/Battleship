@@ -1,6 +1,6 @@
 <?php
 interface Strategy
 {
-	public function move();
+	public function move($board);
 }
 ?>

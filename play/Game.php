@@ -1,6 +1,7 @@
 <?php 
 include "Player.php";
 include "Random.php";
+include "../new/Smart.php";
 	
 class Game {
 	public $players;
@@ -23,15 +24,18 @@ class Game {
 	
 	static function mapJsonToClass($json){
 		$data = json_decode($json);
-		//print_r($data);
 		$instance = new self(null, null, null);
 		$numeberOfShips = 5;
 		
 		$clientShips = $instance->getShips( $data->players[0]->board->ships );
 		$serverShips = $instance->getShips( $data->players[1]->board->ships );
-
-		$clientBoard = new Board((Array) $data->players[0]->board->board, $clientShips);
-		$serverBoard = new Board((Array) $data->players[1]->board->board, $serverShips);
+		
+		$clientBoardArr = array();
+		$serverBoardArr = array();
+		$instance->objToArray($data->players[0]->board->board,$clientBoardArr);
+		$instance->objToArray($data->players[1]->board->board,$serverBoardArr);
+		$clientBoard = new Board( $clientBoardArr, $clientShips );
+ 		$serverBoard = new Board( $serverBoardArr, $serverShips );
 		
 		$clientPlayer = new Player($clientBoard);
 		$compPlayer = new ComputerPlayer("", $serverBoard);
@@ -40,6 +44,28 @@ class Game {
 		$instance->difficulty = $data->strategy;
 		$instance->pid = $data->pid;
 		return $instance;
+	}
+	
+	function objToArray($obj, &$arr){
+	
+		if(!is_object($obj) && !is_array($obj)){
+			$arr = $obj;
+			return $arr;
+		}
+	
+		foreach ($obj as $key => $value)
+		{
+			if (!empty($value))
+			{
+				$arr[$key] = array();
+				$this->objToArray($value, $arr[$key]);
+			}
+			else
+			{
+				$arr[$key] = $value;
+			}
+		}
+		return $arr;
 	}
 	
 	/**
@@ -52,12 +78,19 @@ class Game {
 		return json_encode($this);
 	}
 	
+	function generateComputeMove(){
+		
+		$shot = $this->getComputerPlayer()->generateComputerMove( $this->getClientPlayer()->getBoard() );
+		print_r( $this->getClientPlayer()->getBoard()->printBoard() );
+	}
+	
 	function getShips($ships){
 		foreach ($ships as $shipNumber => $ship) {
 			$shipDeployment[$shipNumber] = new Ship($ship->name, $ship->size, $ship->xPos, $ship->yPos, $ship->direction);
 		}
 		return $shipDeployment;
 	}
+	
 	function jsonToFile(){
 		file_put_contents( "../play/games/" . $this->pid . ".txt", $this->toJson() );
 	}

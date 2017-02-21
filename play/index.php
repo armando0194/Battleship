@@ -16,12 +16,22 @@ if ( empty($pid) ){
 //Read game state from file and map it to a game class
 $json = file_get_contents("games/" . $pid . ".txt");
 $game = Game::mapJsonToClass($json);
-print_r( $game );
-// $clienShot = attemptClientShot($game);
+// $clientShot = validateShot($game);
 
-// if ( empty($clienShot) ){
+// if ( empty($clientShot) ){
 // 	return;
 // }
+
+for($i = 0; $i < 6; $i++)
+	$ack_shot = $game->generateComputeMove();
+
+$response = Response::withShots($clientShot, $ack_shot);
+$response->toJson();
+
+
+
+
+
 
 
 
@@ -47,7 +57,7 @@ function getPidValue() {
  * 
  * @return Play
  */
-function attemptClientShot($game) {
+function validateShot($game) {
 	$shot = $_GET ["shot"];
 	$coordinates = explode ( ",", $shot );
 	

@@ -24,7 +24,11 @@ class ComputerPlayer extends Player  {
 	
 	function __construct($strategy, $board){
 		parent::__construct($board);
-		$this->strategy = $strategy;	
+		$this->strategy = new Smart();;	
+	}
+	
+	function generateComputerMove($board){
+		return $this->strategy->move($board);
 	}
 	
 }

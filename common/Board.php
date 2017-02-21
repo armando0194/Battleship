@@ -132,7 +132,7 @@
 			if( $this->isCellEmpty($x, $y) || $this->isCellOccupied($x, $y) ){
 				$this->checkCollision( $shot );
 				$this->board[$x][$y] = self::HIT;
-				print_r($this->ships);
+				//print_r($this->ships);
 				return true;
 			}
 			return false;
@@ -205,6 +205,8 @@
 				}
 				echo PHP_EOL;
 			}
+			
+			echo PHP_EOL;
 				
 		}
 		
