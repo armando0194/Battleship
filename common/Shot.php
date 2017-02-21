@@ -22,7 +22,15 @@
 		function getY(){
 			return $this->y;
 		}
-	
+		
+		function getIsHit(){
+			return $this -> isHit;
+		}
+		
+		function getIsSunk(){
+			return $this -> isSunk;
+		}
+		
 		function setIsHit($isHit){
 			$this->isHit = $isHit;
 		}
